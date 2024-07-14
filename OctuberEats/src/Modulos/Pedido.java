@@ -7,13 +7,13 @@ public class Pedido {
     private int id;
     private Usuario cliente;
     private Negocio restaurante;
-    private String estado;
+    private String estado; // Puede ser "pendiente", "aceptado", "en camino", "entregado", etc.
 
     public Pedido(int id, Usuario cliente, Negocio restaurante) {
         this.id = id;
         this.cliente = cliente;
         this.restaurante = restaurante;
-        this.estado = "pendiente"; // Estado inicial
+        this.estado = "pendiente"; // Estado inicial del pedido
     }
 
     // Getters y Setters
