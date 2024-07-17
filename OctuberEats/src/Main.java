@@ -6,6 +6,8 @@ import Modulos.Pedido;
 import Services.Registro;
 import Services.GestorPedidos;
 
+import javax.swing.*;
+
 public class Main {
     public static void main(String[] args) {
         // Crear un cliente y un restaurante de ejemplo
@@ -19,6 +21,15 @@ public class Main {
 
         // Crear gestor de pedidos
         GestorPedidos gestorPedidos = new GestorPedidos();
+
+        Interface grafico = new Interface();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Interface frame = new Interface();
+                frame.setVisible(true);
+            }
+        });
 
         // Agregar listeners para manejar eventos de pedidos
         gestorPedidos.addPedidoListener(new GestorPedidos.PedidoListener() {

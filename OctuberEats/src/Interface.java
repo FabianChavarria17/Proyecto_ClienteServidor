@@ -64,13 +64,5 @@ public class Interface extends JFrame {
         displayArea.setText("Realizando pedido...");
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                Interface frame = new Interface();
-                frame.setVisible(true);
-            }
-        });
-    }
+    
 }
