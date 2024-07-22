@@ -1,17 +1,21 @@
 
-import Modulos.Usuario;
-import Modulos.Restaurante;
-import Modulos.Negocio;
-import Modulos.Pedido;
-import Services.Registro;
-import Services.GestorPedidos;
+import InterfazGrafica.RegistoUserUI;
 
 import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-        // Crear un cliente y un restaurante de ejemplo
-        Usuario cliente = new Usuario("1", "Dirección 1", "password123", "Cliente1", "cliente1@example.com", Usuario.Rol.CLIENTE);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                RegistoUserUI registoUserUI = new RegistoUserUI();
+                registoUserUI.setVisible(true);
+            }
+        });
+
+
+        /*Usuario cliente = new Usuario("1", "Dirección 1", "password123", "Cliente1", "cliente1@example.com", Usuario.Rol.CLIENTE);
         Negocio restaurante = new Restaurante("Mi Restaurante", "Dirección del Restaurante", "restaurante@example.com", "Comida Rápida");
 
         // Registrar el cliente y el restaurante (simulado)
@@ -48,6 +52,6 @@ public class Main {
 
         // Simulación de realizar y actualizar pedidos
         gestorPedidos.realizarPedido(cliente, restaurante);
-        gestorPedidos.actualizarEstado(1, "aceptado");
+        gestorPedidos.actualizarEstado(1, "aceptado");*/
     }
 }
