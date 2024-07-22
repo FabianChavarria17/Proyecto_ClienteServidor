@@ -65,6 +65,7 @@ public class RegistoUserUI extends JFrame
         btnRegistrar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("Iniciando menu principal");
                 registrarUsuario();
             }
         });
@@ -100,6 +101,7 @@ public class RegistoUserUI extends JFrame
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+
                 MenuUI menuUI = new MenuUI();
                 menuUI.setVisible(true);
             }

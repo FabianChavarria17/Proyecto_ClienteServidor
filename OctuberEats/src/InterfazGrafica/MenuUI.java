@@ -1,9 +1,14 @@
 package InterfazGrafica;
 
+import Modulos.Restaurante;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MenuUI extends JFrame
 {
@@ -30,7 +35,6 @@ public class MenuUI extends JFrame
         JPanel searchPanel = new JPanel();
         barraBusqueda = new JTextField(20);
         searchButton = new JButton("Buscar");
-        searchPanel.add(new JLabel("Buscar restaurante:"));
         searchPanel.add(barraBusqueda);
         searchPanel.add(searchButton);
 
@@ -96,7 +100,34 @@ public class MenuUI extends JFrame
     }
 
     private void buscarRestaurantes() {
-        JOptionPane.showMessageDialog(null, "Cargando...");
+        String busqueda = barraBusqueda.getText();
+        resultsPanel.removeAll();
+        if(busqueda != null && !busqueda.trim().isEmpty()){
+            List<Restaurante> resultados = Restaurante.datosRestaurantes.getRestaurantes().stream()
+                    .filter(r -> r.getNombre().toLowerCase().contains(busqueda.toLowerCase())
+                            || r.getCategoria().toLowerCase().contains(busqueda.toLowerCase()))
+                    .toList();
+
+            if(resultados.isEmpty()){
+                resultsPanel.add(new JLabel("No se encontraron restaurantes"));
+            }else {
+                StringBuilder sb = new StringBuilder();
+                for(Restaurante restaurante : resultados){
+                    System.out.println("Cargando datos del restaurante...");
+                    JTextArea restauranteInfo = new JTextArea();
+                    restauranteInfo.setText("Nombre: "+ restaurante.getNombre() +"\n "+
+                                            "Direccion: "+ restaurante.getDireccion()+"\n"+
+                                            "Email: "+restaurante.getEmail()+"\n"+
+                                            "Categoría: "+restaurante.getCategoria()+"\n");
+                    restauranteInfo.setEditable(false);
+                    resultsPanel.add(restauranteInfo);
+                }
+            }
+        }else{
+            resultsPanel.add(new JLabel("Input invalido"));
+        }
+        resultsPanel.revalidate();
+        resultsPanel.repaint();
     }
 
     private void mostrarInicio() {
