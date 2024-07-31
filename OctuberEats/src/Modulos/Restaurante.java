@@ -1,6 +1,5 @@
 package Modulos;
 
-import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,9 +43,9 @@ public class Restaurante implements Negocio {
         private static List<Restaurante> restaurantes = new ArrayList<>();
 
         static {
-            restaurantes.add(new Restaurante("Restaurante A", "Calle 1", "Res1@comida.com", "Mexicana"));
-            restaurantes.add(new Restaurante("Restaurante B", "Calle 2", "Res2@comida.com","China"));
-            restaurantes.add(new Restaurante("Restaurante 3", "Calle 3", "Res3@comida.com", "Pizzeria"));
+            restaurantes.add(new Restaurante("El sabor", " San José, Sabana", "elsabor@food.com", "Mexicana"));
+            restaurantes.add(new Restaurante("Satay ", " Oxigeno segunda planta", "satay@food.com","China"));
+            restaurantes.add(new Restaurante("Peperonni's ", "Heredias, San Isidro ", "peperoni's@food.com", "Pizzeria"));
         }
 
         public static List<Restaurante> getRestaurantes(){

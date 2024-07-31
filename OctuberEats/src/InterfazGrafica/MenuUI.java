@@ -1,18 +1,19 @@
 package InterfazGrafica;
 
+import Modulos.Pedido;
 import Modulos.Restaurante;
-
+import Modulos.Usuario;
+import Services.GestorPedidos;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
-public class MenuUI extends JFrame
-{
-    //Codigo por Yulianaaf
+public class MenuUI extends JFrame {
     private JTextField barraBusqueda;
     private JButton searchButton;
     private JButton btnInicio;
@@ -21,8 +22,15 @@ public class MenuUI extends JFrame
     private JButton btnCuenta;
     private JPanel resultsPanel;
     private JTextArea displayArea;
+    private Usuario usuario;
+    private GestorPedidos gestorPedidos;
+    private List<Pedido> carrito;
 
-    public MenuUI() {
+    public MenuUI(Usuario usuario) {
+        this.usuario = usuario;
+        this.gestorPedidos = new GestorPedidos();
+        this.carrito = new ArrayList<>();
+
         setTitle("October Eats - Menú Principal");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -39,7 +47,7 @@ public class MenuUI extends JFrame
         searchPanel.add(searchButton);
 
         // Crear panel de botones
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 4));
         btnInicio = new JButton("Inicio");
         btnCarrito = new JButton("Carrito");
         btnPedidos = new JButton("Pedidos");
@@ -97,33 +105,40 @@ public class MenuUI extends JFrame
                 mostrarCuenta();
             }
         });
+
+        // Mostrar todos los restaurantes al inicio
+        mostrarTodosLosRestaurantes();
+
+        // Agregar listeners para manejar eventos de pedidos
+        gestorPedidos.addPedidoListener(new GestorPedidos.PedidoListener() {
+            @Override
+            public void onPedidoRealizado(Pedido pedido) {
+                System.out.println("Nuevo pedido realizado: #" + pedido.getId());
+            }
+
+            @Override
+            public void onEstadoPedidoActualizado(Pedido pedido) {
+                System.out.println("Estado del pedido #" + pedido.getId() + " actualizado a: " + pedido.getEstado());
+                mostrarPedidos();
+            }
+        });
     }
 
     private void buscarRestaurantes() {
         String busqueda = barraBusqueda.getText();
         resultsPanel.removeAll();
-        if(busqueda != null && !busqueda.trim().isEmpty()){
+        if (busqueda != null && !busqueda.trim().isEmpty()) {
             List<Restaurante> resultados = Restaurante.datosRestaurantes.getRestaurantes().stream()
                     .filter(r -> r.getNombre().toLowerCase().contains(busqueda.toLowerCase())
                             || r.getCategoria().toLowerCase().contains(busqueda.toLowerCase()))
                     .toList();
 
-            if(resultados.isEmpty()){
+            if (resultados.isEmpty()) {
                 resultsPanel.add(new JLabel("No se encontraron restaurantes"));
-            }else {
-                StringBuilder sb = new StringBuilder();
-                for(Restaurante restaurante : resultados){
-                    System.out.println("Cargando datos del restaurante...");
-                    JTextArea restauranteInfo = new JTextArea();
-                    restauranteInfo.setText("Nombre: "+ restaurante.getNombre() +"\n "+
-                                            "Direccion: "+ restaurante.getDireccion()+"\n"+
-                                            "Email: "+restaurante.getEmail()+"\n"+
-                                            "Categoría: "+restaurante.getCategoria()+"\n");
-                    restauranteInfo.setEditable(false);
-                    resultsPanel.add(restauranteInfo);
-                }
+            } else {
+                mostrarRestaurantes(resultados);
             }
-        }else{
+        } else {
             resultsPanel.add(new JLabel("Input invalido"));
         }
         resultsPanel.revalidate();
@@ -135,15 +150,96 @@ public class MenuUI extends JFrame
     }
 
     private void mostrarCarrito() {
-        JOptionPane.showMessageDialog(null, "Cargando...");
+        resultsPanel.removeAll();
+        if (carrito.isEmpty()) {
+            resultsPanel.add(new JLabel("El carrito está vacío"));
+        } else {
+            for (Pedido pedido : carrito) {
+                JPanel pedidoPanel = new JPanel(new GridLayout(0, 1));
+                JTextArea pedidoInfo = new JTextArea();
+                pedidoInfo.setText("Pedido ID: " + pedido.getId() + "\n" +
+                        "Restaurante: " + pedido.getRestaurante().getNombre() + "\n" +
+                        "Estado: " + pedido.getEstado() + "\n" +
+                        "Precio: $" + pedido.getPrecio());
+                pedidoInfo.setEditable(false);
+                JButton btnRealizarPedido = new JButton("Realizar Pedido");
+                btnRealizarPedido.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        gestorPedidos.realizarPedido(usuario, pedido.getRestaurante(), pedido.getPrecio());
+                        carrito.remove(pedido);
+                        mostrarCarrito();
+                    }
+                });
+                pedidoPanel.add(pedidoInfo);
+                pedidoPanel.add(btnRealizarPedido);
+                resultsPanel.add(pedidoPanel);
+            }
+        }
+        resultsPanel.revalidate();
+        resultsPanel.repaint();
     }
 
     private void mostrarPedidos() {
-        JOptionPane.showMessageDialog(null, "Cargando...");
+        resultsPanel.removeAll();
+        List<Pedido> pedidosUsuario = gestorPedidos.getPedidosUsuario(usuario);
+        if (pedidosUsuario.isEmpty()) {
+            resultsPanel.add(new JLabel("No tienes pedidos en este momento"));
+        } else {
+            for (Pedido pedido : pedidosUsuario) {
+                JPanel pedidoPanel = new JPanel(new GridLayout(0, 1));
+                JTextArea pedidoInfo = new JTextArea();
+                pedidoInfo.setText("Pedido ID: " + pedido.getId() + "\n" +
+                        "Restaurante: " + pedido.getRestaurante().getNombre() + "\n" +
+                        "Estado: " + pedido.getEstado() + "\n" +
+                        "Precio: $" + pedido.getPrecio());
+                pedidoInfo.setEditable(false);
+                pedidoPanel.add(pedidoInfo);
+                resultsPanel.add(pedidoPanel);
+            }
+        }
+        resultsPanel.revalidate();
+        resultsPanel.repaint();
     }
 
-    private void mostrarCuenta(){
-        JOptionPane.showMessageDialog(null, "Cargando...");
+    private void mostrarCuenta() {
+        JOptionPane.showMessageDialog(this, "Usuario: " + usuario.getNombre() + "\nCorreo: " + usuario.getCorreo() + "\nDirección: " + usuario.getDireccion());
     }
 
+    private void mostrarTodosLosRestaurantes() {
+        mostrarRestaurantes(Restaurante.datosRestaurantes.getRestaurantes());
+    }
+
+    private void mostrarRestaurantes(List<Restaurante> restaurantes) {
+        resultsPanel.removeAll();
+        for (Restaurante restaurante : restaurantes) {
+            JPanel restaurantePanel = new JPanel(new GridLayout(0, 1));
+            JTextArea restauranteInfo = new JTextArea();
+            restauranteInfo.setText("Nombre: " + restaurante.getNombre() + "\n" +
+                    "Direccion: " + restaurante.getDireccion() + "\n" +
+                    "Email: " + restaurante.getEmail() + "\n" +
+                    "Categoría: " + restaurante.getCategoria());
+            restauranteInfo.setEditable(false);
+            JButton btnAgregarCarrito = new JButton("Agregar al carrito");
+            btnAgregarCarrito.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    agregarAlCarrito(restaurante);
+                }
+            });
+            restaurantePanel.add(restauranteInfo);
+            restaurantePanel.add(btnAgregarCarrito);
+            resultsPanel.add(restaurantePanel);
+        }
+        resultsPanel.revalidate();
+        resultsPanel.repaint();
+    }
+
+    private void agregarAlCarrito(Restaurante restaurante) {
+        Random random = new Random();
+        double precio = 10 + (40 - 10) * random.nextDouble(); // Precio aleatorio
+        Pedido pedido = new Pedido(carrito.size() + 1, usuario, restaurante, precio);
+        carrito.add(pedido);
+        JOptionPane.showMessageDialog(this, "Pedido agregado al carrito: " + restaurante.getNombre() + " - $" + precio);
+    }
 }

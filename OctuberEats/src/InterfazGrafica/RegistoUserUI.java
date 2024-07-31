@@ -2,19 +2,14 @@ package InterfazGrafica;
 
 import Modulos.Usuario;
 import Security.Seguridad;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-
-public class RegistoUserUI extends JFrame
-{
-
+public class RegistoUserUI extends JFrame {
     private JTextField textFieldNombre;
     private JTextField textFielDireccion;
     private JTextField textFieldCorreo;
@@ -24,22 +19,20 @@ public class RegistoUserUI extends JFrame
 
     private List<Usuario> usuarios;
 
-    public RegistoUserUI(){
+    public RegistoUserUI() {
         setTitle("Registro de Usuario");
-        setSize(600,300);
+        setSize(600, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         usuarios = new ArrayList<>();
 
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(6,2));
-
+        panel.setLayout(new GridLayout(6, 2));
 
         panel.add(new JLabel("Nombre: "));
         textFieldNombre = new JTextField();
         panel.add(textFieldNombre);
-
 
         panel.add(new JLabel("Dirección: "));
         textFielDireccion = new JTextField();
@@ -71,21 +64,18 @@ public class RegistoUserUI extends JFrame
         });
     }
 
-
-    public void registrarUsuario(){
+    public void registrarUsuario() {
         String nombre = textFieldNombre.getText();
         String direccion = textFielDireccion.getText();
         String correo = textFieldCorreo.getText();
-        String contrasena = textFieldCorreo.getText();
+        String contrasena = new String(passwordField.getPassword());
         Usuario.Rol rol = (Usuario.Rol) comboBoxRol.getSelectedItem();
 
-        if(nombre.isEmpty() || direccion.isEmpty() || correo.isEmpty() || contrasena.isEmpty() || rol == null){
-            JOptionPane.showMessageDialog(this, "Por favor, complete correctamente los campos requeridos "+JOptionPane.ERROR_MESSAGE);
+        if (nombre.isEmpty() || direccion.isEmpty() || correo.isEmpty() || contrasena.isEmpty() || rol == null) {
+            JOptionPane.showMessageDialog(this, "Por favor, complete correctamente los campos requeridos", "Error", JOptionPane.ERROR_MESSAGE);
             return;
-
         }
         String userID = java.util.UUID.randomUUID().toString();
-
         String contrasenaHush = Seguridad.hashPassword(contrasena);
 
         Usuario usuario = new Usuario(userID, direccion, contrasenaHush, nombre, correo, rol);
@@ -101,15 +91,11 @@ public class RegistoUserUI extends JFrame
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-
-                MenuUI menuUI = new MenuUI();
+                MenuUI menuUI = new MenuUI(usuario);
                 menuUI.setVisible(true);
             }
         });
 
         this.dispose();
     }
-
-
-
 }
