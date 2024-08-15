@@ -3,7 +3,7 @@
   <component name="DBNavigator.Project.DatabaseBrowserManager">
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
-    <show-object-properties value="true" />
+    <show-object-properties value="false" />
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
@@ -22,7 +22,7 @@
     <connections>
       <connection id="3d61c410-1664-430c-9421-7b8e5223f8e4" active="true" signed="true">
         <database>
-          <name value="october_eats" />
+          <name value="Connection" />
           <description value="" />
           <database-type value="MYSQL" />
           <config-type value="BASIC" />
